@@ -1,34 +1,68 @@
+import json
 from models import Task, TaskList
 from automata import TaskStateMachine
 
-def main():
-    # Buat daftar tugas
-    task1 = Task("Belajar Git")
-    task2 = Task("Push ke GitHub")
+# Load konfigurasi dari config.json
+def load_config():
+    with open("config.json") as f:
+        return json.load(f)
 
+# Simpan daftar tugas ke file
+def save_tasks_to_file(task_list: TaskList[str], filepath: str):
+    with open(filepath, "w") as f:
+        for task in task_list.get_all():
+            f.write(f"{task.name}|{task.state}\n")
+
+# Baca daftar tugas dari file
+def load_tasks_from_file(filepath: str) -> TaskList[str]:
     task_list = TaskList[str]()
-    task_list.add(task1)
-    task_list.add(task2)
+    try:
+        with open(filepath, "r") as f:
+            for line in f:
+                line = line.strip()
+                if line:
+                    name, state = line.split("|")
+                    task = Task(name)
+                    task.state = state
+                    task_list.add(task)
+    except FileNotFoundError:
+        print(f"(File '{filepath}' belum ada, daftar tugas dimulai kosong)")
+    return task_list
 
-    # Tampilkan daftar tugas awal
-    print("=== Daftar Tugas ===")
+def main():
+    # Load config
+    config = load_config()
+    task_file = config["task_file"]
+
+    print("\n=== Konfigurasi Runtime ===")
+    print(f"File penyimpanan tugas: {task_file}")
+
+    # Load tugas dari file
+    task_list = load_tasks_from_file(task_file)
+
+    # Tampilkan daftar tugas lama
+    print("\n=== Daftar Tugas Sebelumnya ===")
     for idx, task in enumerate(task_list.get_all()):
         print(f"{idx + 1}. {task}")
 
-    # Uji FSM (finite state machine) pada task1
-    print("\n--- Transisi Status Otomatis pada Tugas 1 ---")
-    fsm = TaskStateMachine(task1)
+    # Tambah tugas baru
+    print("\nTambah tugas baru: 'Review Coding'")
+    new_task = Task("Review Coding")
+    task_list.add(new_task)
 
-    print(f"Sebelum: {task1}")
-    fsm.next_state()  # To Do → In Progress
-    print(f"Setelah 1x next_state(): {task1}")
-    fsm.next_state()  # In Progress → Done
-    print(f"Setelah 2x next_state(): {task1}")
-    fsm.next_state()  # Done → tidak berubah
-    print(f"Setelah 3x next_state(): {task1}")
+    # Uji transisi status dengan automata
+    print("\n--- Transisi Status Tugas Baru ---")
+    fsm = TaskStateMachine(new_task)
+    print(f"Sebelum: {new_task}")
+    fsm.next_state()  # To Do -> In Progress
+    print(f"Setelah 1x next_state(): {new_task}")
+    fsm.next_state()  # In Progress -> Done
+    print(f"Setelah 2x next_state(): {new_task}")
+    fsm.next_state()  # Done → (tidak berubah)
 
-def __main__check__():
-    print("Program dijalankan sebagai skrip utama.")
+    # Simpan ke file
+    save_tasks_to_file(task_list, task_file)
+    print("\nData tugas disimpan ke file.")
 
 if __name__ == "__main__":
     main()
