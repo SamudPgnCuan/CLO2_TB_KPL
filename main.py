@@ -1,5 +1,6 @@
 import json
 from models import Task, TaskList
+from menu import show_menu, menu_options
 from automata import TaskStateMachine
 
 # Load konfigurasi dari config.json
@@ -30,39 +31,21 @@ def load_tasks_from_file(filepath: str) -> TaskList[str]:
     return task_list
 
 def main():
-    # Load config
     config = load_config()
     task_file = config["task_file"]
-
-    print("\n=== Konfigurasi Runtime ===")
-    print(f"File penyimpanan tugas: {task_file}")
-
-    # Load tugas dari file
     task_list = load_tasks_from_file(task_file)
 
-    # Tampilkan daftar tugas lama
-    print("\n=== Daftar Tugas Sebelumnya ===")
-    for idx, task in enumerate(task_list.get_all()):
-        print(f"{idx + 1}. {task}")
+    print("=== Aplikasi To-Do List CLI ===")
+    options = menu_options(task_list, save_tasks_to_file, task_file)
 
-    # Tambah tugas baru
-    print("\nTambah tugas baru: 'Review Coding'")
-    new_task = Task("Review Coding")
-    task_list.add(new_task)
-
-    # Uji transisi status dengan automata
-    print("\n--- Transisi Status Tugas Baru ---")
-    fsm = TaskStateMachine(new_task)
-    print(f"Sebelum: {new_task}")
-    fsm.next_state()  # To Do -> In Progress
-    print(f"Setelah 1x next_state(): {new_task}")
-    fsm.next_state()  # In Progress -> Done
-    print(f"Setelah 2x next_state(): {new_task}")
-    fsm.next_state()  # Done → (tidak berubah)
-
-    # Simpan ke file
-    save_tasks_to_file(task_list, task_file)
-    print("\nData tugas disimpan ke file.")
+    while True:
+        show_menu()
+        choice = input("Pilih opsi (1-4): ").strip()
+        action = options.get(choice)
+        if action:
+            action()
+        else:
+            print("Opsi tidak dikenal. Silakan coba lagi.")
 
 if __name__ == "__main__":
     main()
