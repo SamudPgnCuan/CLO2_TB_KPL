@@ -7,6 +7,8 @@ def show_menu():
     print("2. Lihat Semua Tugas")
     print("3. Ubah Status Tugas")
     print("4. Simpan dan Keluar")
+    print("5. Hapus Tugas")
+    
 
 def menu_options(task_list, save_func, task_file):
 
@@ -39,6 +41,18 @@ def menu_options(task_list, save_func, task_file):
         except (ValueError, IndexError):
             print("Input tidak valid.")
 
+    def delete_task():
+        view_tasks()
+        if not task_list.get_all():
+            return
+        try:
+            index = int(input("Masukkan nomor tugas yang ingin dihapus: ")) - 1
+            task = task_list.get_all().pop(index)
+            save_func(task_list, task_file)
+            print(f"Tugas '{task.name}' telah dihapus.")
+        except (ValueError, IndexError):
+            print("Input tidak valid.")
+
     def exit_program():
         save_func(task_list, task_file)
         print("Tugas disimpan. Program selesai.")
@@ -48,5 +62,6 @@ def menu_options(task_list, save_func, task_file):
         '1': add_task,
         '2': view_tasks,
         '3': update_task,
-        '4': exit_program
+        '4': exit_program,
+        '5': delete_task
     }
