@@ -40,7 +40,7 @@ def main():
 
     while True:
         show_menu()
-        choice = input("Pilih opsi (1-4): ").strip()
+        choice = input("Pilih opsi (1-5): ").strip()
         action = options.get(choice)
         if action:
             action()
