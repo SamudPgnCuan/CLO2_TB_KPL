@@ -30,7 +30,7 @@ def menu_options(task_list, save_func, task_file):
 
     def update_task():
         view_tasks()
-        if not task_list.get_all():
+        if not task_list.get_all(): # Mencegah update jika tidak ada tugas
             return
         try:
             index = int(input("Pilih nomor tugas untuk update status: ")) - 1
@@ -43,7 +43,7 @@ def menu_options(task_list, save_func, task_file):
 
     def delete_task():
         view_tasks()
-        if not task_list.get_all():
+        if not task_list.get_all(): # Mencegah akses ke list kosong
             return
         try:
             index = int(input("Masukkan nomor tugas yang ingin dihapus: ")) - 1
@@ -52,7 +52,7 @@ def menu_options(task_list, save_func, task_file):
             save_func(task_list, task_file)
             assert task not in task_list.get_all(), "Postcondition failed: task belum terhapus"
             print(f"Tugas '{task.name}' telah dihapus.")
-        except (ValueError, IndexError):
+        except (ValueError, IndexError): #Menangani input non-numerik atau index di luar jangkauan
             print("Input tidak valid.")
 
     def exit_program():
