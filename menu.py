@@ -47,8 +47,10 @@ def menu_options(task_list, save_func, task_file):
             return
         try:
             index = int(input("Masukkan nomor tugas yang ingin dihapus: ")) - 1
+            assert 0 <= index < len(task_list.get_all()), "Precondition failed: indeks di luar batas"
             task = task_list.get_all().pop(index)
             save_func(task_list, task_file)
+            assert task not in task_list.get_all(), "Postcondition failed: task belum terhapus"
             print(f"Tugas '{task.name}' telah dihapus.")
         except (ValueError, IndexError):
             print("Input tidak valid.")
