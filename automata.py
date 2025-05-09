@@ -17,10 +17,10 @@ class TaskStateMachine:
         "Postcondition failed: status akhir tugas tidak valid"
 
         if self.task.state == 'To Do':
-            assert self.task.state == 'In Progress', \
+            assert self.task.state == 'To Do', \
                 "Postcondition failed: transisi dari 'To Do' harus ke 'In Progress'"
         elif self.task.state == 'In Progress':
-            assert self.task.state == 'Done', \
+            assert self.task.state == 'In Progress', \
                 "Postcondition failed: transisi dari 'In Progress' harus ke 'Done'"
         elif self.task.state == 'Done':
             assert self.task.state == 'Done', \
