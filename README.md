@@ -1,6 +1,6 @@
 # Aplikasi to-do-list
 
-## KELOMPOK X - Konstruksi Perangkat Lunak SE06-03
+## KELOMPOK FATUR - Konstruksi Perangkat Lunak SE06-03
 
 | Nama                   | NIM        |
 | ---------------------- | ---------- |
