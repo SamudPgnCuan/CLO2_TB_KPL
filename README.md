@@ -1,20 +1,5 @@
 # Aplikasi to-do-list
 
-## KELOMPOK FATUR - Konstruksi Perangkat Lunak SE06-03
-
-| Nama                   | NIM        |
-| ---------------------- | ---------- |
-| Muhammad Samudra       | 2211104062 |
-| Dawnie Julian Nugroho  | 2211104064 |
-| Aditya Sendi Hana S.   | 2211104067 |
-| Mohammad Fathurrohman  | 2211104070 |
-
-## Cara Penggunaan
-1. Ubah isi file config.json untuk mengubah nama file dan lokasi file text list tugas
-2. Jalankan main.py
-3. Input opsi sesuai menu
-4. Jangan lupa pilih opsi 4 (simpan dan keluar) untuk menyimpan perubahan
-
 ## Deskripsi Singkat
 
 Aplikasi ini adalah program simpel untuk membuat dan menyimpan to-do-list (di sini lebih untuk list tugas). Sistem ini berbasis command line interface tanpa GUI dengan sistem **menu interaktif berbasis table-driven construction**. Pengguna dapat:
@@ -23,11 +8,27 @@ Aplikasi ini adalah program simpel untuk membuat dan menyimpan to-do-list (di si
     3. Memperbarui status tugas (menggunakan Finite State Machine/konsep automata)
     4. Dan menyimpan data tugas ke file tasks.txt
 
+## Cara Penggunaan
+1. Ubah isi file config.json untuk mengubah nama file dan lokasi file text list tugas
+2. Jalankan main.py
+3. Input opsi sesuai menu
+4. Jangan lupa pilih opsi 4 (simpan dan keluar) untuk menyimpan perubahan
+
+## KELOMPOK halo - Konstruksi Perangkat Lunak SE06-03
+
+| Nama                   | NIM        |
+| ---------------------- | ---------- |
+| Muhammad Samudra       | 2211104062 |
+| Dawnie Julian Nugroho  | 2211104064 |
+| Aditya Sendi Hana S.   | 2211104067 |
+| Mohammad Fathurrohman  | 2211104070 |
+
+
 
 ##  Teknik Konstruksi yang Diterapkan
 
-| Teknik Konstruksi     | File/Modul         | Penjelasan Ringkas                                     |
-|------------------------|---------------------|----------------------------------------------------------|
+| Teknik Konstruksi      | File/Modul          | Penjelasan Ringkas                                      |
+|------------------------|---------------------|---------------------------------------------------------|
 | Generics               | `models.py`         | `Task<T>` dan `TaskList<T>` dengan `typing.Generic`     |
 | Automata (FSM)         | `automata.py`       | Transisi status `To Do → In Progress → Done`            |
 | Runtime Configuration  | `config.json`       | File eksternal untuk path penyimpanan tugas             |
@@ -44,7 +45,112 @@ Aplikasi ini adalah program simpel untuk membuat dan menyimpan to-do-list (di si
 
 ---
 
-# Penjelasan Program dan Teknik Konstruksi Terapan
+
+
+# Alur Kerja Progam (Penjelasan Aplikasi)
+
+**Code:**
+main.py
+```python
+import json
+from models import Task, TaskList
+from menu import show_menu, menu_options
+from automata import TaskStateMachine
+
+# Load konfigurasi dari config.json
+def load_config():
+    with open("config.json") as f:
+        return json.load(f)
+
+# Simpan daftar tugas ke file
+def save_tasks_to_file(task_list: TaskList[str], filepath: str):
+    with open(filepath, "w") as f:
+        for task in task_list.get_all():
+            f.write(f"{task.name}|{task.state}\n")
+
+# Baca daftar tugas dari file
+def load_tasks_from_file(filepath: str) -> TaskList[str]:
+    task_list = TaskList[str]()
+    try:
+        with open(filepath, "r") as f:
+            for line in f:
+                line = line.strip()
+                if line:
+                    name, state = line.split("|")
+                    task = Task(name)
+                    task.state = state
+                    task_list.add(task)
+    except FileNotFoundError:
+        print(f"(File '{filepath}' belum ada, daftar tugas dimulai kosong)")
+    return task_list
+
+def main():
+    config = load_config()
+    task_file = config["task_file"]
+    task_list = load_tasks_from_file(task_file)
+
+    print("=== Aplikasi To-Do List CLI ===")
+    options = menu_options(task_list, save_tasks_to_file, task_file)
+
+    while True:
+        show_menu()
+        choice = input("Pilih opsi (1-5): ").strip()
+        action = options.get(choice)
+        if action:
+            action()
+        else:
+            print("Opsi tidak dikenal. Silakan coba lagi.")
+
+if __name__ == "__main__":
+    main()
+
+```
+
+Saat program dijalankan:
+
+1. Program membaca konfigurasi dari `config.json`
+2. Memuat daftar tugas dari file `tasks.txt` 
+3. Menampilkan menu CLI
+4. Pengguna dapat:
+   - Menambah tugas baru
+   - Melihat semua tugas
+   - Memperbarui status tugas
+   - Menyimpan & keluar
+
+---
+# Defensive Programming dan Design by Contract (DbC)
+
+- Defensive Programming pada automata.py:
+![def automata](https://github.com/user-attachments/assets/61b2f238-77f5-4a48-ba26-ae046c21e2ce)
+Bagian else menangkap jika state berisi nilai lain dari state yang sudah ditentukan
+- DbC pada automata.py:
+    - invariant awal dan precondition:
+    ![dbc automata 1](https://github.com/user-attachments/assets/898d2524-333c-47cb-931a-4196ca0e29dc)
+    invariant akan mengecek apakah state valid saat FSM dibuat dan precondition untuk mengecek di awal transisi
+
+    - invariant akhir dan postcondition:
+   ![dbc automata 2](https://github.com/user-attachments/assets/ccd0d54e-1f7f-4dcc-bb84-324e72de5525)
+    invariant akan mengecek apakah state akhir berisi nilai state yang benar-benar ada (`To Do`, `In Progress`, `Done`) sementara postcondition akan mengecek apakah status akhir sesuai dengan kontrak/FSM yang ditentukan
+
+- DbC pada menu.py
+![dbc menu](https://github.com/user-attachments/assets/b3340607-9896-43ee-8b3a-3444422c9ab8)
+precondition pada line 50 menjaga agar index di dalam batas (tidak menghapus data nomor negatif 5 misalnya). Postcondition pada line 53 mengecek apakah task yang seharusnya terhapus masih ada, jika ada maka task tersebut belum terhapus.
+- Defensive Programming pada menu.py:
+    - delete_task() :
+    ![def menu delete ](https://github.com/user-attachments/assets/3ba49458-ed8d-4051-9301-d5bbf55b9bdc)
+    Mencegah fungsi untuk menghapus data dari list kosong
+    - update task():
+    ![menu update 1](https://github.com/user-attachments/assets/e5268845-178e-48a2-bf46-76ab03b181cb)
+    mencegah fungsi untuk menjalankan transisi tetapi tidak ada task
+    ![menu update 2](https://github.com/user-attachments/assets/60e1ee5b-fb7d-410b-82fa-9b03a99453b9)
+    menangkap ketika user salah input (jika bukan numerik atau di luar indeks)
+- Defensive Programming dalam main.py:
+![def main](https://github.com/user-attachments/assets/33b4a8be-806e-436f-ba87-914aafe7c1f3)
+mencegah membuka file tasks.txt ketika file belum dibuat/lokasi di .json diubah
+
+---
+
+# Penjelasan Teknik Konstruksi
 
 ## models.py (Penerapan Teknik Generics)
 
@@ -151,73 +257,5 @@ return {
 ```
 Inilah bagian dari Table-Driven. Tidak ada `if` dan `else` ataupun `case` dan `switch`. Jika ingin menambahkan opsi hanya menambahkan 1 key-fungsi di dictionary, tidak harus membuat blok `elif` atau `case` baru. Hal ini membuat pengendali logika lebih mudah ditambahkan dan dikelola daripada harus membuat blok baru atau mencari dulu blok yang ingin dihapus.
 
-# Alur Kerja Progam
-
-**Code:**
-main.py
-```python
-import json
-from models import Task, TaskList
-from menu import show_menu, menu_options
-from automata import TaskStateMachine
-
-# Load konfigurasi dari config.json
-def load_config():
-    with open("config.json") as f:
-        return json.load(f)
-
-# Simpan daftar tugas ke file
-def save_tasks_to_file(task_list: TaskList[str], filepath: str):
-    with open(filepath, "w") as f:
-        for task in task_list.get_all():
-            f.write(f"{task.name}|{task.state}\n")
-
-# Baca daftar tugas dari file
-def load_tasks_from_file(filepath: str) -> TaskList[str]:
-    task_list = TaskList[str]()
-    try:
-        with open(filepath, "r") as f:
-            for line in f:
-                line = line.strip()
-                if line:
-                    name, state = line.split("|")
-                    task = Task(name)
-                    task.state = state
-                    task_list.add(task)
-    except FileNotFoundError:
-        print(f"(File '{filepath}' belum ada, daftar tugas dimulai kosong)")
-    return task_list
-
-def main():
-    config = load_config()
-    task_file = config["task_file"]
-    task_list = load_tasks_from_file(task_file)
-
-    print("=== Aplikasi To-Do List CLI ===")
-    options = menu_options(task_list, save_tasks_to_file, task_file)
-
-    while True:
-        show_menu()
-        choice = input("Pilih opsi (1-5): ").strip()
-        action = options.get(choice)
-        if action:
-            action()
-        else:
-            print("Opsi tidak dikenal. Silakan coba lagi.")
-
-if __name__ == "__main__":
-    main()
-
-```
-
-Saat program dijalankan:
-
-1. Program membaca konfigurasi dari `config.json`
-2. Memuat daftar tugas dari file `tasks.txt` 
-3. Menampilkan menu CLI
-4. Pengguna dapat:
-   - Menambah tugas baru
-   - Melihat semua tugas
-   - Memperbarui status tugas
-   - Menyimpan & keluar
-
+# Link repo github
+https://github.com/SamudPgnCuan/CLO2_TB_KPL
