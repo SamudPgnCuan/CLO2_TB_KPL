@@ -259,3 +259,6 @@ Inilah bagian dari Table-Driven. Tidak ada `if` dan `else` ataupun `case` dan `s
 
 # Link repo github
 https://github.com/SamudPgnCuan/CLO2_TB_KPL
+
+## Side Notes
+terdapat file gui_app.py tetapi belum ditest secara keseluruhan, jika ingin menggunakan gui jalankan gui_app.y dan bukan main.py
