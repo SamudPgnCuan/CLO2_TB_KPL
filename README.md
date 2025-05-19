@@ -3,10 +3,10 @@
 ## Deskripsi Singkat
 
 Aplikasi ini adalah program simpel untuk membuat dan menyimpan to-do-list (di sini lebih untuk list tugas). Sistem ini berbasis command line interface tanpa GUI dengan sistem **menu interaktif berbasis table-driven construction**. Pengguna dapat:
-    1. Menambah tugas
-    2. Melihat daftar tugas
-    3. Memperbarui status tugas (menggunakan Finite State Machine/konsep automata)
-    4. Dan menyimpan data tugas ke file tasks.txt
+1. Menambah tugas
+2. Melihat daftar tugas
+3. Memperbarui status tugas (menggunakan Finite State Machine/konsep automata)
+4. Dan menyimpan data tugas ke file tasks.txt
 
 ## Cara Penggunaan
 1. Ubah isi file config.json untuk mengubah nama file dan lokasi file text list tugas
