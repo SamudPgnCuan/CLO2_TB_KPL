@@ -22,6 +22,7 @@ Aplikasi ini adalah program simpel untuk membuat dan menyimpan to-do-list (di si
 | Dawnie Julian Nugroho  | 2211104064 |
 | Aditya Sendi Hana S.   | 2211104067 |
 | Mohammad Fathurrohman  | 2211104070 |
+| Dimas Angga Sulistyo N.| 2211104086 |
 
 
 
