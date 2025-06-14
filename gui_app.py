@@ -25,7 +25,7 @@ class TodoListGUI:
     def load_config(self):
         with open("config.json") as f:
             return json.load(f)
-    
+     
     def save_tasks_to_file(self):
         with open(self.task_file, "w") as f:
             for task in self.task_list.get_all():

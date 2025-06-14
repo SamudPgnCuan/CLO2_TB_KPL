@@ -29,7 +29,7 @@ def load_tasks_from_file(filepath: str) -> TaskList[str]:
     except FileNotFoundError:
         print(f"(File '{filepath}' belum ada, daftar tugas dimulai kosong)") #Cegah program crash saat file tugas belum dibuat.
     return task_list
-
+ 
 def main():
     config = load_config()
     task_file = config["task_file"]

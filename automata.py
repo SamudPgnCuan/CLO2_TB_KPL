@@ -37,3 +37,4 @@ class TaskStateMachine:
         elif prev_state == 'Done':
             assert self.task.state == 'Done', \
                 "Postcondition failed: status tidak boleh berubah dari 'Done'"
+ 

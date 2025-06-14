@@ -27,7 +27,7 @@ def menu_options(task_list, save_func, task_file):
             print("(Tidak ada tugas)")
         for idx, task in enumerate(task_list.get_all()):
             print(f"{idx + 1}. {task}")
-
+ 
     def update_task():
         view_tasks()
         if not task_list.get_all(): # Mencegah update jika tidak ada tugas

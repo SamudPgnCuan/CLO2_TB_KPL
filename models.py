@@ -20,3 +20,4 @@ class TaskList(Generic[T]):
     def get_all(self) -> List[Task[T]]:
         return self.tasks
 
+ 
